@@ -5,7 +5,7 @@ This repository contains data to validate the performance of the
 [meas_deblender](http://github.com/lsst/meas_deblender) product.
 
 At present the repository only holds simulated data generated using
-[glasim](https://github.com/GalSim-developers/GalSim) but will eventually also
+[galsim](https://github.com/GalSim-developers/GalSim) but will eventually also
 contain public HSC data that can be used to test the performance of the deblender on difficult fields.
 
 Git LFS
