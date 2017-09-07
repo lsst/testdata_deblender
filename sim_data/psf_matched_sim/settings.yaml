@@ -1,0 +1,160 @@
+seed : 1 # Random Seed
+output_dir: "./new" # Directory to put the output catalogs
+blends: 2
+density: 400 # Density is 1/density
+min_separation: 5 # Minimum distance of a new galaxy from existing galaxies, formerly min_dist
+
+# Total flux of a source sampler
+flux:
+    class: PowerLaw
+    params:
+        min_: 500
+        max_: 100000
+        gamma: -0.75
+
+# Distance from the center of the image
+position:
+    min_: 0
+    gamma: -0.3
+
+image:
+    noise:
+        #type: GaussianNoise
+        #sigma: 0.1
+        class: PoissonNoise
+        params:
+            sky_level: 10
+    # Number of galaxies per blend
+    n_galaxies:
+        min_: 3
+        max_: 20
+    width:
+        class: PowerLaw
+        params:
+            min_: 30
+            max_: 70
+            gamma: -1.5
+    height:
+        class: PowerLaw
+        params:
+            min_: 30
+            max_: 70
+            gamma: -1.5
+
+psf:
+    psfs:
+        # This can either be a model for each band (ugrizy) or a single PSF model that is
+        # used in all of the bands
+        all:
+            class: Gaussian
+            params:
+                sigma: 1.9 # size of gaussian psf
+            ellipticity: # galsim q=b/a, q=1->circle
+                class: Flat
+                params:
+                    min_: 0.93
+                    max_: 0.95
+    grow: 7
+
+filters:
+    norm: i # Filter to use as normalization
+    files:
+        names: ugrizy # Names of the different filters
+        path: "../filters"
+        file_template: LSST_{0}.dat
+
+stellar:
+    frac: .2
+    seds:
+        pickles_path: "../pickles" # path to Pickles simulated stellar spectra
+        spec_types: ["O5V", "B57V", "A5V", "F5V", "K5V", "M5V"] # Stellar spectral types to use in blends
+        target_flux_density: 1.0
+        wavelength: 500
+    morphology:
+        class: Gaussian
+        params:
+            sigma: .000000001 # 1e-9
+
+galactic:
+    seds:
+        class: get_galaxy_seds
+        params:
+            n_templates: 25
+            target_flux_density: 1.0
+            wavelength: 500
+
+    sampler:
+        # Use Simulated Galaxies
+        class: SimulatedGalaxySampler
+        params:
+            scale: 1
+            max_redshift: 2.1 # Maximum redshift
+            # Color shift from the bulge to the disk
+            color_gradient:
+                class: PowerLaw
+                params:
+                    min_: 0.075
+                    max_: 0.15
+                    gamma: -1.5
+        
+            bulge:
+                # Radius sampler
+                radius:
+                    class: PowerLaw
+                    params:
+                        min_: 0.1
+                        max_: 10
+                        gamma: -1
+
+                # Ellipticity sampler
+                ellipticity: # value of galsim q=b/a
+                    class: Flat
+                    params:
+                        min_: 0.3
+                        max_: 1.0
+
+                # Model to use
+                model:
+                    class: DeVaucouleurs
+                    radius: half_light_radius
+                    params: {}
+                    #class: Sersic
+                    #params:
+                    #    index: 1
+
+            disk:
+                min_ratio: 1.2 # minimum ratio of the disk_radius/bulge_radius
+                # Fraction of the disk to the bulge
+                frac:
+                    class: Flat
+                    params:
+                        min_: 0.4
+                        max_: 1.0
+                # Radius sampler
+                radius:
+                #    class: PowerLaw
+                #    min_: 0.1
+                #    max_: 10
+                #    gamma: -1
+
+                # Ellipticity sampler
+                ellipticity:
+                #    class: Flat
+                #    min_: 0.1
+                #    max_: 0.9
+
+                #Model
+                model:
+                    class: Exponential
+                    radius: half_light_radius
+                    params: {}
+                    #class: Sersic
+                    #params:
+                    #    index: 1
+        # Use Real Galaxies
+        #class: RealGalaxySampler
+        #params:
+        #    filename: "real_galaxy_catalog_23.5_example.fits"
+        #    filepath: "./galsim_data"
+        #    pixel_scale: 0.23
+        #    max_redshift: 2.1 # Maximum redshift
