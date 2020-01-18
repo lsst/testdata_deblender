@@ -348,7 +348,7 @@ for filter_ in filter_names:
     exposure.setWcs(wcs)
     exposure.setCalib(calib)
     exposures[filter_] = exposure
-    result = detectTask.makeSourceCatalog(table, exposure)
+    result = detectTask.run(table, exposure)
     detections[filter_] = result.sources
     result.sources.writeFits('%s/det_%s.fits' % (args.output_dir, filter_))
 
