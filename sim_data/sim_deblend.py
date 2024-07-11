@@ -161,7 +161,7 @@ for itile in range(tile):
         for filter_name in filters.keys():
             images[filter_name] = galsim.ImageF(bounds, scale=scale)
 
-        print 'generating image %d/%d with %d galaxies' % (current_image,tile*tile, n_gal)
+        print('generating image %d/%d with %d galaxies' % (current_image,tile*tile, n_gal))
         current_image += 1
         for i in range(n_gal):
 
@@ -337,7 +337,7 @@ for filter_ in filter_names:
 detections = {}
 exposures = {}
 for filter_ in filter_names:
-    print 'detecting in ', filter_
+    print('detecting in ', filter_)
     lsst_image = lsst_images[filter_]
 
     exposure = afwImage.ExposureF(lsst_image.getBBox(afwImage.PARENT))
@@ -362,12 +362,12 @@ merged_sources = merged.getMergedSourceCatalog([detections[filter_] for filter_ 
 for record in merged_sources:
     record.getFootprint().sortPeaks()
 
-print 'Total merged objects', len(merged_sources)
+print('Total merged objects', len(merged_sources))
 merged_sources.writeFits('%s/det_merge.fits' % (args.output_dir))
 
 catalogs = {}
 for filter_ in filter_names:
-    print 'deblend, measure', filter_
+    print('deblend, measure', filter_)
     exposure = exposures[filter_]
     fwhm = exposure.getPsf().computeShape().getDeterminantRadius()*2.35
     sources = afwTable.SourceCatalog(merged_sources)
